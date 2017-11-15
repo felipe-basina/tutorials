@@ -9,4 +9,8 @@ public interface IUserDAO {
     List<User> searchUser(List<SearchCriteria> params);
 
     void save(User entity);
+    
+    List<User> findAll();
+    
+    void delete(Long id);
 }

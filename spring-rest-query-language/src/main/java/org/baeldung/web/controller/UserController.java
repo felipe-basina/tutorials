@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.baeldung.persistence.dao.GenericSpecificationsBuilder;
 import org.baeldung.persistence.dao.IUserDAO;
 import org.baeldung.persistence.dao.MyUserPredicatesBuilder;
@@ -57,6 +58,19 @@ public class UserController {
         super();
     }
 
+    @RequestMapping(method = RequestMethod.DELETE, value = "/users")
+    @ResponseBody
+    public List<User> deleteUserById(@RequestParam(value = "id", required = true) Long id) {
+    	this.service.delete(id);
+    	return this.service.findAll();
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/users/all")
+    @ResponseBody
+    public List<User> findAll() {
+    	return this.service.findAll();
+    }
+    
     // API - READ
 
     @RequestMapping(method = RequestMethod.GET, value = "/users")
@@ -153,11 +167,19 @@ public class UserController {
 
     // API - WRITE
 
-    @RequestMapping(method = RequestMethod.POST, value = "/users")
+    @RequestMapping(method = RequestMethod.POST, value = "/users", consumes = { "application/json" }, produces = { "application/json" })
     @ResponseStatus(HttpStatus.CREATED)
-    public void create(@RequestBody User resource) {
-        Preconditions.checkNotNull(resource);
-        dao.save(resource);
+    @ResponseBody
+    public User create(@RequestBody User resource) {
+    	Logger.getLogger(UserController.class).debug("Entrou em create!!!");
+    	try {
+    		Preconditions.checkNotNull(resource);
+    		resource = dao.save(resource);
+    		return resource;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	return null;
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/myusers")
